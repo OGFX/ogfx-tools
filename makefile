@@ -7,22 +7,22 @@ all: ogfx_lv2ls ogfx_jack_switch ogfx_jack_midi_dump ogfx_jack_list_ports
 
 install: all
 	mkdir -p ${prefix}/bin
-	install lv2lsjson ${prefix}/bin/
-	install jack_switch ${prefix}/bin/
-	install jack_midi_json_dump ${prefix}/bin/
-	install jack_list_ports ${prefix}/bin/
+	install ogfx_lv2ls ${prefix}/bin/
+	install ogfx_jack_switch ${prefix}/bin/
+	install ogfx_jack_midi_dump ${prefix}/bin/
+	install ogfx_jack_list_ports ${prefix}/bin/
 
 clean: 
-	rm -f lv2lsjson jack_swith jack_midi_json_dump jack_list_ports
+	rm -f ogfx_lv2ls ogfx_jack_swith ogfx_jack_midi_json_dump ogfx_jack_list_ports
 
-lv2lsjson: lv2lsjson.cc
-	$(CXX) ${cxx_extra_flags} -o lv2lsjson lv2lsjson.cc `pkg-config lilv-0 --cflags --libs`
+ogfx_lv2ls: ogfx_lv2ls.cc
+	$(CXX) ${cxx_extra_flags} -o ogfx_lv2ls ogfx_lv2ls.cc `pkg-config lilv-0 --cflags --libs`
 
-jack_switch: jack_switch.cc
-	$(CXX) ${cxx_extra_flags} -o jack_switch jack_switch.cc `pkg-config jack --cflags --libs` -lboost_program_options
+ogfx_jack_switch: ogfx_jack_switch.cc
+	$(CXX) ${cxx_extra_flags} -o ogfx_jack_switch ogfx_jack_switch.cc `pkg-config jack --cflags --libs` -lboost_program_options
 
-jack_midi_json_dump: jack_midi_json_dump.cc
-	$(CXX) -g ${cxx_extra_flags} -o jack_midi_json_dump jack_midi_json_dump.cc `pkg-config jack --cflags --libs` -lboost_program_options
+ogfx_jack_midi_dump: ogfx_jack_midi_dump.cc
+	$(CXX) -g ${cxx_extra_flags} -o ogfx_jack_midi_dump ogfx_jack_midi_dump.cc `pkg-config jack --cflags --libs` -lboost_program_options
 
-jack_list_ports: jack_list_ports.cc
-	$(CXX) ${cxx_extra_flags} -o jack_list_ports jack_list_ports.cc `pkg-config jack --cflags --libs` -lboost_program_options
+ogfx_jack_list_ports: ogfx_jack_list_ports.cc
+	$(CXX) ${cxx_extra_flags} -o ogfx_jack_list_ports ogfx_jack_list_ports.cc `pkg-config jack --cflags --libs` -lboost_program_options
