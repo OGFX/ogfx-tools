@@ -13,7 +13,7 @@ install: all
 	install ogfx_jack_list_ports ${prefix}/bin/
 
 clean: 
-	rm -f ogfx_lv2ls ogfx_jack_swith ogfx_jack_midi_json_dump ogfx_jack_list_ports
+	rm -f ogfx_lv2ls ogfx_jack_switch ogfx_jack_midi_dump ogfx_jack_list_ports
 
 ogfx_lv2ls: ogfx_lv2ls.cc
 	$(CXX) ${cxx_extra_flags} -o ogfx_lv2ls ogfx_lv2ls.cc `pkg-config lilv-0 --cflags --libs`
