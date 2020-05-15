@@ -3,7 +3,7 @@ cxx_extra_flags ?= -O3 -march=native -Werror -Wno-conversion
 
 .PHONY: clean all install
 
-all: lv2lsjson jack_switch jack_midi_json_dump jack_list_ports
+all: ogfx_lv2ls ogfx_jack_switch ogfx_jack_midi_dump ogfx_jack_list_ports
 
 install: all
 	mkdir -p ${prefix}/bin
