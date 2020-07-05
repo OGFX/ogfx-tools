@@ -1,5 +1,5 @@
 prefix ?= /usr/local
-cxx_extra_flags ?= -g -O3 -march=native -Werror -Wno-conversion
+cxx_extra_flags ?= -O3 -march=native -Werror -Wno-conversion
 
 .PHONY: clean all install
 
