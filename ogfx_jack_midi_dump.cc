@@ -29,14 +29,14 @@ extern "C" {
 
       // CC
       if ((event.buffer[0] & (128 + 32 + 16)) == (128 + 32 + 16)) {
-	// std::cout << "cc\n";
-	jack_ringbuffer_write(ringbuffer, (const char*)event.buffer, message_size);
+	      // std::cout << "cc\n";
+      	jack_ringbuffer_write(ringbuffer, (const char*)event.buffer, message_size);
       }
 
       // Pitch bend
       if ((event.buffer[0] & (128 + 64 + 32)) == (128 + 64 + 32)) {
-	// std::cout << "hmm\n";
-	jack_ringbuffer_write(ringbuffer, (const char*)event.buffer, message_size);
+      	// std::cout << "hmm\n";
+      	jack_ringbuffer_write(ringbuffer, (const char*)event.buffer, message_size);
       }
     }
     
@@ -100,10 +100,10 @@ int main(int argc, char *argv[]) {
       jack_ringbuffer_read(ringbuffer, data, message_size);
 
       std::cout
-	<< "{ \"e\": [ "
-	<< (int)((uint8_t)data[0]) << ", " << (int)((uint8_t)data[1]) << ", " << (int)((uint8_t)data[2])
-	<< " ] }"
-	<< std::endl;
+	      << "{ \"e\": [ "
+	      << (int)((uint8_t)data[0]) << ", " << (int)((uint8_t)data[1]) << ", " << (int)((uint8_t)data[2])
+      	<< " ] }"
+      	<< std::endl;
     } else {
       std::cout << "{ \"e\": [] }" << std::endl;
     }
