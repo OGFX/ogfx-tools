@@ -10,8 +10,10 @@
 #include <unistd.h>
 
 jack_port_t *in0;
+jack_port_t *out0;
 
-jack_ringbuffer_t *ringbuffer;
+jack_ringbuffer_t *in_ringbuffer;
+jack_ringbuffer_t *out_ringbuffer;
 
 const size_t message_size = 3;
 
@@ -53,7 +55,7 @@ int main(int argc, char *argv[]) {
     ("help,h",
      "get some help")
     ("name,n",
-     po::value<std::string>(&name)->default_value("ogfx_jack_midi_dump"),
+     po::value<std::string>(&name)->default_value("ogfx_jack_midi_tool"),
      "the jack client name");
 
   po::variables_map vm;
@@ -65,29 +67,31 @@ int main(int argc, char *argv[]) {
     return EXIT_SUCCESS;
   }
 
-  ringbuffer = jack_ringbuffer_create(2 << 16);
+  in_ringbuffer = jack_ringbuffer_create(2 << 16);
+  out_ringbuffer = jack_ringbuffer_create(2 << 16);
   
   jack_status_t jack_status;
   jack_client_t *jack_client = jack_client_open(name.c_str(), JackNullOption, &jack_status);
 
   if (NULL == jack_client) {
-    std::cerr << "ogfx_jack_midi_dump: Failed to create jack client. Exiting..." << std::endl;
+    std::cerr << "ogfx_jack_midi_tool: Failed to create jack client. Exiting..." << std::endl;
     return EXIT_FAILURE;
   }
 
   in0 = jack_port_register(jack_client, "in0", JACK_DEFAULT_MIDI_TYPE, JackPortIsInput, 0);
+  out0 = jack_port_register(jack_client, "out0", JACK_DEFAULT_MIDI_TYPE, JackPortIsOutput, 0);
 
   if (0 != jack_set_process_callback(jack_client, process, 0)) {
-    std::cerr << "ogfx_jack_midi_dump: Failed to set process callback. Exiting..." << std::endl;
+    std::cerr << "ogfx_jack_midi_tool: Failed to set process callback. Exiting..." << std::endl;
     return EXIT_FAILURE;
   }
 
   if (0 != jack_activate(jack_client)) {
-    std::cerr << "ogfx_jack_midi_dump: Failed to activate. Exiting..." << std::endl;
+    std::cerr << "ogfx_jack_midi_tool: Failed to activate. Exiting..." << std::endl;
     return EXIT_FAILURE;
   }
 
-  std::cout << "ogfx_jack_midi_dump: Feed me an integer and an end-of-line and I'll show you an event if I got one since the last time..." << std::endl;
+  std::cout << "ogfx_jack_midi_tool: Feed me an integer and an end-of-line and I'll show you an event if I got one since the last time..." << std::endl;
   
   while(true) {
     int n;
