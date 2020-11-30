@@ -2,6 +2,8 @@
 #include <jack/ringbuffer.h>
 #include <jack/midiport.h>
 
+#include <json/json.h>
+
 #include <boost/program_options.hpp>
 #include <string>
 #include <assert.h>
@@ -97,6 +99,7 @@ int main(int argc, char *argv[]) {
   }
 
   while(true) {
+    Json::Value json_value;
     int n;
     std::cin >> n;
 

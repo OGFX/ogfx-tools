@@ -22,7 +22,7 @@ ogfx_jack_switch: ogfx_jack_switch.cc
 	$(CXX) ${cxx_extra_flags} -o ogfx_jack_switch ogfx_jack_switch.cc `pkg-config jack --cflags --libs` -lboost_program_options
 
 ogfx_jack_midi_tool: ogfx_jack_midi_tool.cc
-	$(CXX) ${cxx_extra_flags} -o ogfx_jack_midi_tool ogfx_jack_midi_tool.cc `pkg-config jack --cflags --libs` -lboost_program_options
+	$(CXX) ${cxx_extra_flags} -o ogfx_jack_midi_tool ogfx_jack_midi_tool.cc `pkg-config jack --cflags --libs` -lboost_program_options -ljsoncpp
 
 ogfx_jack_list_ports: ogfx_jack_list_ports.cc
 	$(CXX) ${cxx_extra_flags} -o ogfx_jack_list_ports ogfx_jack_list_ports.cc `pkg-config jack --cflags --libs` -lboost_program_options
