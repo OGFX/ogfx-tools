@@ -17,6 +17,8 @@ jack_ringbuffer_t *out_ringbuffer;
 
 const size_t message_size = 3;
 
+size_t maximum_number_of_messages = 0;
+
 extern "C" {
   int process(jack_nframes_t nframes, void *arg) {
     void *in0_buffer = jack_port_get_buffer(in0, nframes);
@@ -32,13 +34,13 @@ extern "C" {
       // CC
       if ((event.buffer[0] & (128 + 32 + 16)) == (128 + 32 + 16)) {
 	      // std::cout << "cc\n";
-      	jack_ringbuffer_write(ringbuffer, (const char*)event.buffer, message_size);
+      	jack_ringbuffer_write(in_ringbuffer, (const char*)event.buffer, message_size);
       }
 
       // Pitch bend
       if ((event.buffer[0] & (128 + 64 + 32)) == (128 + 64 + 32)) {
       	// std::cout << "hmm\n";
-      	jack_ringbuffer_write(ringbuffer, (const char*)event.buffer, message_size);
+      	jack_ringbuffer_write(in_ringbuffer, (const char*)event.buffer, message_size);
       }
     }
     
@@ -56,7 +58,10 @@ int main(int argc, char *argv[]) {
      "get some help")
     ("name,n",
      po::value<std::string>(&name)->default_value("ogfx_jack_midi_tool"),
-     "the jack client name");
+     "the jack client name")
+    ("maximum-messages,m",
+     po::value<size_t>(&maximum_number_of_messages)->default_value(5),
+     "the maximum number of messages to receive on stdout at once");
 
   po::variables_map vm;
   po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -91,17 +96,15 @@ int main(int argc, char *argv[]) {
     return EXIT_FAILURE;
   }
 
-  std::cout << "ogfx_jack_midi_tool: Feed me an integer and an end-of-line and I'll show you an event if I got one since the last time..." << std::endl;
-  
   while(true) {
     int n;
     std::cin >> n;
 
     size_t available;
 
-    if ((available = jack_ringbuffer_read_space(ringbuffer)) >= 3) {
+    if ((available = jack_ringbuffer_read_space(in_ringbuffer)) >= message_size) {
       char data[message_size];
-      jack_ringbuffer_read(ringbuffer, data, message_size);
+      jack_ringbuffer_read(in_ringbuffer, data, message_size);
 
       std::cout
 	      << "{ \"e\": [ "
