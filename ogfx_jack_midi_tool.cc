@@ -2,8 +2,6 @@
 #include <jack/ringbuffer.h>
 #include <jack/midiport.h>
 
-#include <json/json.h>
-
 #include <boost/program_options.hpp>
 #include <string>
 #include <assert.h>
@@ -62,7 +60,7 @@ int main(int argc, char *argv[]) {
      po::value<std::string>(&name)->default_value("ogfx_jack_midi_tool"),
      "the jack client name")
     ("maximum-messages,m",
-     po::value<size_t>(&maximum_number_of_messages)->default_value(5),
+     po::value<size_t>(&maximum_number_of_messages)->default_value(50),
      "the maximum number of messages to receive on stdout at once");
 
   po::variables_map vm;
@@ -99,24 +97,42 @@ int main(int argc, char *argv[]) {
   }
 
   while(true) {
-    Json::Value json_value;
-    int n;
-    std::cin >> n;
-
     size_t available;
 
     if ((available = jack_ringbuffer_read_space(in_ringbuffer)) >= message_size) {
       char data[message_size];
       jack_ringbuffer_read(in_ringbuffer, data, message_size);
 
-      std::cout
-	      << "{ \"e\": [ "
-	      << (int)((uint8_t)data[0]) << ", " << (int)((uint8_t)data[1]) << ", " << (int)((uint8_t)data[2])
-      	<< " ] }"
-      	<< std::endl;
+      std::cout << (int)((uint8_t)data[0]) << " " << (int)((uint8_t)data[1]) << " " << (int)((uint8_t)data[2]) << " " << std::endl;
     } else {
-      std::cout << "{ \"e\": [] }" << std::endl;
+      std::cout << "" << std::endl;
     }
+
+    std::string input;
+    std::getline(std::cin, input);
+
+    if (input.length() != 0) {
+        std::stringstream str(input);
+        std::vector<uint8_t> data;
+
+        while(str.good()) {
+            int n;
+            str >> n;
+            data.push_back((uint8_t)n);
+        }
+
+        if (data.size() % message_size != 0) {
+           continue; 
+        }
+
+        size_t current_index = 0;
+        while (  (available = jack_ringbuffer_write_space(out_ringbuffer)) >= message_size 
+                 && current_index < data.size()) {
+            jack_ringbuffer_write(out_ringbuffer, (const char*)(&data[current_index]), message_size);
+            current_index += message_size;
+        }
+    }
+
   }
   
   jack_client_close(jack_client);
