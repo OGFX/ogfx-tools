@@ -37,8 +37,6 @@ extern "C" {
         out_midi_data[1] = data[1];
         out_midi_data[2] = data[2];
     
-        jack_midi_event_write(out0_buffer, time, out_midi_data, message_size);
-
         ++time;
     }
 
