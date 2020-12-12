@@ -28,7 +28,7 @@ extern "C" {
 
     size_t time = 0;
     while (jack_ringbuffer_read_space(out_ringbuffer) >= message_size) {
-        std::cout << "writing stuff.." << std::endl;
+        // std::cout << "writing stuff.." << std::endl;
         jack_midi_data_t *out_midi_data = jack_midi_event_reserve(out0_buffer, time, message_size);
         char data[message_size];
         jack_ringbuffer_read(out_ringbuffer, data, message_size);
@@ -45,7 +45,7 @@ extern "C" {
     for (jack_nframes_t event_index = 0; event_index < number_of_events; ++event_index) {
       jack_midi_event_t event;
 
-      std::cout << "event\n";
+      // std::cout << "event\n";
       jack_midi_event_get(&event, in0_buffer, event_index);
 
       if (event.size == 3) { 
