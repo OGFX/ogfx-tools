@@ -22,6 +22,25 @@ size_t maximum_number_of_messages = 0;
 extern "C" {
   int process(jack_nframes_t nframes, void *arg) {
     void *in0_buffer = jack_port_get_buffer(in0, nframes);
+    void *out0_buffer = jack_port_get_buffer(out0, nframes);
+
+    jack_midi_clear_buffer(out0_buffer);
+
+    size_t time = 0;
+    while (jack_ringbuffer_read_space(out_ringbuffer) >= message_size) {
+        // std::cout << "writing stuff.." << std::endl;
+        jack_midi_data_t *out_midi_data = jack_midi_event_reserve(out0_buffer, time, message_size);
+        char data[message_size];
+        jack_ringbuffer_read(out_ringbuffer, data, message_size);
+
+        out_midi_data[0] = data[0];
+        out_midi_data[1] = data[1];
+        out_midi_data[2] = data[2];
+    
+        jack_midi_event_write(out0_buffer, time, out_midi_data, message_size);
+
+        ++time;
+    }
 
     jack_nframes_t number_of_events = jack_midi_get_event_count(in0_buffer);
 
@@ -31,15 +50,7 @@ extern "C" {
       // std::cout << "event\n";
       jack_midi_event_get(&event, in0_buffer, event_index);
 
-      // CC
-      if ((event.buffer[0] & (128 + 32 + 16)) == (128 + 32 + 16)) {
-	      // std::cout << "cc\n";
-      	jack_ringbuffer_write(in_ringbuffer, (const char*)event.buffer, message_size);
-      }
-
-      // Pitch bend
-      if ((event.buffer[0] & (128 + 64 + 32)) == (128 + 64 + 32)) {
-      	// std::cout << "hmm\n";
+      if (event.size == 3) { 
       	jack_ringbuffer_write(in_ringbuffer, (const char*)event.buffer, message_size);
       }
     }
@@ -111,6 +122,10 @@ int main(int argc, char *argv[]) {
     std::string input;
     std::getline(std::cin, input);
 
+    if (input == "quit") {
+        break;
+    }
+
     if (input.length() != 0) {
         std::stringstream str(input);
         std::vector<uint8_t> data;
@@ -128,6 +143,7 @@ int main(int argc, char *argv[]) {
         size_t current_index = 0;
         while (  (available = jack_ringbuffer_write_space(out_ringbuffer)) >= message_size 
                  && current_index < data.size()) {
+            // std::cout << "writing " << (int)data[current_index] << " " << (int)data[current_index + 1] << " "  << (int)data[current_index + 2] << std::endl;
             jack_ringbuffer_write(out_ringbuffer, (const char*)(&data[current_index]), message_size);
             current_index += message_size;
         }
