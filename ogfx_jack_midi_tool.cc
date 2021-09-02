@@ -139,7 +139,7 @@ int main(int argc, char *argv[]) {
         }
 
         size_t current_index = 0;
-        while (  (available = jack_ringbuffer_write_space(out_ringbuffer)) >= message_size 
+        while ((available = jack_ringbuffer_write_space(out_ringbuffer)) >= message_size 
                  && current_index < data.size()) {
             // std::cout << "writing " << (int)data[current_index] << " " << (int)data[current_index + 1] << " "  << (int)data[current_index + 2] << std::endl;
             jack_ringbuffer_write(out_ringbuffer, (const char*)(&data[current_index]), message_size);
