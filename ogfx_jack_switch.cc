@@ -4,8 +4,14 @@
 #include <assert.h>
 #include <iostream>
 #include <cstdlib>
+#include <signal.h>
 
 int channel_switch = 0;
+int quit = 0;
+
+static void signal_handler(int signo) {
+  quit = 1;
+}
 
 jack_port_t *in0;
 jack_port_t *in1;
@@ -49,6 +55,8 @@ extern "C" {
   outputs 10 and 11.
 */
 int main(int argc, char *argv[]) {
+  signal(SIGINT, signal_handler);
+
   std::string name;
   
   namespace po = boost::program_options;
@@ -74,7 +82,7 @@ int main(int argc, char *argv[]) {
   jack_client_t *jack_client = jack_client_open(name.c_str(), JackNullOption, &jack_status);
 
   if (NULL == jack_client) {
-    std::cerr << "Failed to create jack client. Exiting..." << std::endl;
+    std::cerr << "ogfx_jack_switch: Failed to create jack client. Exiting..." << std::endl;
     return EXIT_FAILURE;
   }
 
@@ -88,26 +96,29 @@ int main(int argc, char *argv[]) {
   out11 = jack_port_register(jack_client, "out11", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
 
   if (0 != jack_set_process_callback(jack_client, process, 0)) {
-    std::cerr << "Failed to set process callback. Exiting..." << std::endl;
+    std::cerr << "ogfx_jack_switch: Failed to set process callback. Exiting..." << std::endl;
     return EXIT_FAILURE;
   }
 
   if (0 != jack_activate(jack_client)) {
-    std::cerr << "Failed to activate. Exiting..." << std::endl;
+    std::cerr << "ogfx_jack_switch: Failed to activate. Exiting..." << std::endl;
     return EXIT_FAILURE;
   }
 
-  std::cout << "0CR for output channels 00/01, 1CR for output channels 10/11. EOF to quit" << std::endl;
+  std::cout << "ogfx_jack_switch: 0CR for output channels 00/01, 1CR for output channels 10/11. EOF to quit" << std::endl;
   
   int n;
-  while (std::cin >> n) {
-    std::cout << "got : " << n << std::endl;
+  while (quit == 0 && std::cin >> n) {
+    std::cout << "ogfx_jack_switch: got : " << n << std::endl;
     if (0 == n) {
       channel_switch = 0;
     } else {
       channel_switch = 1;
     }
   }
+
+  std::cout << "ogfx_jack_switch: exiting..." << std::endl;
   
+  jack_deactivate(jack_client);
   jack_client_close(jack_client);
 }
