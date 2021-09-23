@@ -106,19 +106,9 @@ int main(int argc, char *argv[]) {
   }
 
   while(true) {
-    size_t available;
-
-    if ((available = jack_ringbuffer_read_space(in_ringbuffer)) >= message_size) {
-      char data[message_size];
-      jack_ringbuffer_read(in_ringbuffer, data, message_size);
-
-      std::cout << (int)((uint8_t)data[0]) << " " << (int)((uint8_t)data[1]) << " " << (int)((uint8_t)data[2]) << " " << std::endl;
-    } else {
-      std::cout << "" << std::endl;
-    }
-
     std::string input;
     std::getline(std::cin, input);
+    size_t available;
 
     if (input == "quit") {
         break;
@@ -146,6 +136,16 @@ int main(int argc, char *argv[]) {
             current_index += message_size;
         }
     }
+
+    if ((available = jack_ringbuffer_read_space(in_ringbuffer)) >= message_size) {
+      char data[message_size];
+      jack_ringbuffer_read(in_ringbuffer, data, message_size);
+
+      std::cout << (int)((uint8_t)data[0]) << " " << (int)((uint8_t)data[1]) << " " << (int)((uint8_t)data[2]) << " " << std::endl;
+    } else {
+      std::cout << "" << std::endl;
+    }
+
 
   }
   
