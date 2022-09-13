@@ -23,7 +23,7 @@ jack_port_t *out01;
 jack_port_t *out10;
 jack_port_t *out11;
 
-const float white_noise_factor = 1e-30f;
+const float white_noise_factor = 1e-20f;
 
 extern "C" {
     int process(jack_nframes_t nframes, void *arg) {
