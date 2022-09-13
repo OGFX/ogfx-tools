@@ -1,5 +1,5 @@
 prefix ?= /usr/local
-cxx_extra_flags = $(CXXFLAGS) -O3 -Wall -Werror -Wno-conversion -ffast-math -funroll-loops
+cxx_extra_flags = $(CFLAGS) $(CXXFLAGS) -O3 -Wall -Werror -Wno-conversion -ffast-math -funroll-loops
 
 .PHONY: clean all install
 
