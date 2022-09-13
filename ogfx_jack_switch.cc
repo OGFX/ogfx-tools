@@ -6,6 +6,8 @@
 #include <cstdlib>
 #include <signal.h>
 
+#include "white_noise.h"
+
 int channel_switch = 0;
 int quit = 0;
 
@@ -43,6 +45,14 @@ extern "C" {
             memcpy(out10_buffer, in0_buffer, nframes * sizeof(float));
             memcpy(out11_buffer, in1_buffer, nframes * sizeof(float));
         }
+
+        for (jack_nframes_t frame = 0; frame < nframes; ++frame) {
+            ((float*)out10_buffer)[frame] += 1e-20f * white_noise[frame];
+            ((float*)out11_buffer)[frame] += 1e-20f * white_noise[frame];
+            ((float*)out00_buffer)[frame] += 1e-20f * white_noise[frame];
+            ((float*)out01_buffer)[frame] += 1e-20f * white_noise[frame];
+        }
+
         return 0;
     }
 }
