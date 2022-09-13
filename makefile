@@ -1,5 +1,5 @@
 prefix ?= /usr/local
-cxx_extra_flags = $(CXXFLAGS) -Wall -Werror -Wno-conversion
+cxx_extra_flags = $(CXXFLAGS) -O3 -Wall -Werror -Wno-conversion
 
 .PHONY: clean all install
 
