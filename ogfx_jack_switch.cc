@@ -23,6 +23,8 @@ jack_port_t *out01;
 jack_port_t *out10;
 jack_port_t *out11;
 
+const white_noise_factor = 1e-30f;
+
 extern "C" {
     int process(jack_nframes_t nframes, void *arg) {
         void *in0_buffer = jack_port_get_buffer(in0, nframes);
@@ -47,10 +49,10 @@ extern "C" {
         }
 
         for (jack_nframes_t frame = 0; frame < nframes; ++frame) {
-            ((float*)out10_buffer)[frame] += 1e-20f * white_noise[frame];
-            ((float*)out11_buffer)[frame] += 1e-20f * white_noise[frame];
-            ((float*)out00_buffer)[frame] += 1e-20f * white_noise[frame];
-            ((float*)out01_buffer)[frame] += 1e-20f * white_noise[frame];
+            ((float*)out10_buffer)[frame] += white_noise_factor * white_noise[frame];
+            ((float*)out11_buffer)[frame] += white_noise_factor * white_noise[frame];
+            ((float*)out00_buffer)[frame] += white_noise_factor * white_noise[frame];
+            ((float*)out01_buffer)[frame] += white_noise_factor * white_noise[frame];
         }
 
         return 0;
