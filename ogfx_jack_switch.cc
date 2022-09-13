@@ -49,8 +49,6 @@ extern "C" {
         }
 
         for (jack_nframes_t frame = 0; frame < nframes; ++frame) {
-            ((float*)out10_buffer)[frame] += white_noise_factor * white_noise[frame];
-            ((float*)out11_buffer)[frame] += white_noise_factor * white_noise[frame];
             ((float*)out00_buffer)[frame] += white_noise_factor * white_noise[frame];
             ((float*)out01_buffer)[frame] += white_noise_factor * white_noise[frame];
         }
