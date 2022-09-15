@@ -56,10 +56,16 @@ int main(int argc, char *argv[]) {
     for (auto it = j.begin(); it != j.end(); ++it) {
         std::string from = it->at(0).get<std::string>();
         std::string to = it->at(1).get<std::string>();
-        std::cout << "Connecting: " << from << " --> " << to << std::endl;
-        int ret = jack_connect(jack_client, from.c_str(), to.c_str());
+        int ret;
+        if (disconnect) {
+            std::cout << "Disconnecting: " << from << " --> " << to << std::endl;
+            ret = jack_disconnect(jack_client, from.c_str(), to.c_str());
+        } else {
+            std::cout << "Connecting: " << from << " --> " << to << std::endl;
+            ret = jack_connect(jack_client, from.c_str(), to.c_str());
+        }
         if (ret != 0) {
-            std::cerr << "Failed to connect ports: " << from << " -> "  << to << " (ret: " << ret << ")" << std::endl;
+            std::cerr << "Failed to (dis)connect ports: " << from << " -> "  << to << " (ret: " << ret << ")" << std::endl;
         }
     }
 
