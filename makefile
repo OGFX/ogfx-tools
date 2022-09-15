@@ -11,6 +11,7 @@ install: all
 	install ogfx_jack_switch ${prefix}/bin/
 	install ogfx_jack_midi_tool ${prefix}/bin/
 	install ogfx_jack_list_ports ${prefix}/bin/
+	install ogfx_jack_batch_connect ${prefix}/bin/
 
 clean: 
 	rm -f ogfx_lv2ls ogfx_jack_switch ogfx_jack_midi_json_dump ogfx_jack_list_ports ogfx_jack_midi_tool ogfx_jack_batch_connect
