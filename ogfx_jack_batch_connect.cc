@@ -56,11 +56,34 @@ int main(int argc, char *argv[]) {
     for (auto it = j.begin(); it != j.end(); ++it) {
         std::string from = it->at(0).get<std::string>();
         std::string to = it->at(1).get<std::string>();
-        int ret;
-        if (disconnect) {
+
+        jack_port_t *from_port = jack_port_by_name(jack_client, from.c_str());
+        // jack_port_t *to_port = jack_port_by_name(jack_client, to.c_str());
+
+        if (0 == from_port) {
+            fprintf(stderr, "Failed to lookup port: %s\n", from.c_str());
+            continue;
+        }
+
+        bool connected = false;
+  
+        const char** connections = jack_port_get_all_connections(jack_client, from_port);
+        if (NULL != connections) {
+            while (0 != *connections) {
+                if (std::string(*connections) == to) {
+                    connected = true;
+                    break;
+                }
+                ++connections;
+            }
+        }
+
+
+        int ret = 0;
+        if (connected && disconnect) {
             std::cout << "Disconnecting: " << from << " --> " << to << std::endl;
             ret = jack_disconnect(jack_client, from.c_str(), to.c_str());
-        } else {
+        } else if (!connected && !disconnect) {
             std::cout << "Connecting: " << from << " --> " << to << std::endl;
             ret = jack_connect(jack_client, from.c_str(), to.c_str());
         }
