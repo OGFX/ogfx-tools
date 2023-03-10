@@ -35,6 +35,13 @@ int main(int argc, char* argv[])
       
       str << "    \"uri\": \"" << lilv_node_as_uri(uri_node) << "\",\n";
 
+      const LilvNode *file_uri_node = lilv_plugin_get_library_uri(plugin);
+      if (NULL == file_uri_node) {
+        throw std::runtime_error("failed to get file uri");
+      }
+      
+      str << "    \"file_uri\": \"" << lilv_file_uri_parse(lilv_node_as_uri(file_uri_node), nullptr) << "\",\n";
+
       const LilvNode *name_node = lilv_plugin_get_name(plugin);
       if (NULL == name_node) {
         throw std::runtime_error("failed to get name");
